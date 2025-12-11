@@ -29,7 +29,7 @@ class Entry(BaseModel):
     
     id: str = Field(
         default_factory=lambda: str(uuid4()),
-        description="Unique identifier for the entry (UUID)."
+        description="Unique identifier for the entry (UUID).",
         min_length=36, # Enforce UUID format length
         max_length=36
     )
