@@ -1,5 +1,5 @@
-from pydantic import BaseModel, Field
-from typing import Optional
+from pydantic import BaseModel, Field, field_validator, model_validator, ClassVar
+from typing import Optional, ClassVar
 from datetime import datetime
 from uuid import uuid4
 
