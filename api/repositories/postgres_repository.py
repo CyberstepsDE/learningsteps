@@ -10,10 +10,10 @@ from dotenv import load_dotenv
 from repositories.interface_repository import DatabaseInterface
 
 load_dotenv()
-
-DATABASE_URL = os.getenv("DATABASE_URL")
-if not DATABASE_URL:
-    raise ValueError("DATABASE_URL environment variable is missing")
+# Fix
+# DATABASE_URL = os.getenv("DATABASE_URL")
+# if not DATABASE_URL:
+#     raise ValueError("DATABASE_URL environment variable is missing")
 
 @backoff.on_exception(
     backoff.expo,
@@ -32,8 +32,11 @@ class PostgresDB(DatabaseInterface):
         raise TypeError(f"Type {type(obj)} not serializable")
         
     async def __aenter__(self):
+        # moved the code here and used os.environ instead
+        DATABASE_URL = os.environ("DATABASE_URL")
         # self.pool = await asyncpg.create_pool(DATABASE_URL)
         # NOTE: We use os.environ to get the DATABASE_URL that Docker Compose loaded from .env
+
         self.pool = await _create_pool_with_retry(os.environ["DATABASE_URL"])           
         return self
 
