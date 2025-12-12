@@ -5,6 +5,9 @@ services:
       - ..:/workspaces:cached
     command: sleep infinity
     env_file: ["../.env"]
+    depends_on: # fix for socket.gaierror
+      postgres:
+        condition: service_started    
   postgres:
     image: postgres:15
     ports:
