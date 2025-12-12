@@ -1,3 +1,4 @@
+import backoff
 import json
 import os
 import uuid
@@ -14,6 +15,14 @@ DATABASE_URL = os.getenv("DATABASE_URL")
 if not DATABASE_URL:
     raise ValueError("DATABASE_URL environment variable is missing")
 
+@backoff.on_exception(
+    backoff.expo,
+    (asyncpg.exceptions.InvalidCatalogNameError, OSError),
+    max_time=15, # Will retry connection for up to 15 seconds
+)
+async def _create_pool_with_retry(dsn):
+    return await asyncpg.create_pool(dsn)
+
 class PostgresDB(DatabaseInterface):
     @staticmethod
     def datetime_serialize(obj):
@@ -23,7 +32,9 @@ class PostgresDB(DatabaseInterface):
         raise TypeError(f"Type {type(obj)} not serializable")
         
     async def __aenter__(self):
-        self.pool = await asyncpg.create_pool(DATABASE_URL)
+        # self.pool = await asyncpg.create_pool(DATABASE_URL)
+        # NOTE: We use os.environ to get the DATABASE_URL that Docker Compose loaded from .env
+        self.pool = await _create_pool_with_retry(os.environ["DATABASE_URL"])           
         return self
 
     async def __aexit__(self, exc_type, exc_value, traceback):
