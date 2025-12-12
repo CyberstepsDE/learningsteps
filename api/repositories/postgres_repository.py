@@ -33,7 +33,7 @@ class PostgresDB(DatabaseInterface):
         
     async def __aenter__(self):
         # moved the code here and used os.environ instead
-        DATABASE_URL = os.environ("DATABASE_URL")
+        DATABASE_URL = os.environ["DATABASE_URL"]
         # self.pool = await asyncpg.create_pool(DATABASE_URL)
         # NOTE: We use os.environ to get the DATABASE_URL that Docker Compose loaded from .env
 
