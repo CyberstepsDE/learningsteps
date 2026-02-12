@@ -54,12 +54,18 @@ async def get_entry(request: Request, entry_id: str, entry_service: EntryService
     TODO: Implement this endpoint to return a single journal entry by ID
     
     Steps to implement:
-    1. Use the entry_service to get the entry by ID
-    2. Return 404 if entry not found
-    3. Return the entry as JSON if found
-    
-    Hint: Check the update_entry endpoint for similar patterns
-    """
+    """   
+    # 1. Use the entry_service to get the entry by ID
+    entry = await entry_service.get_entry(entry_id)
+
+    # 2. Return 404 if entry not found
+    if entry is None:
+        raise HTTPException(status_code=404, detail=f"Entry with ID {entry_id} not found")
+
+    # 3. Return the entry as JSON if found
+    return entry
+
+    # Hint: Check the update_entry endpoint for similar patterns
     raise HTTPException(status_code=501, detail="Not implemented - complete this endpoint!")
 
 @router.patch("/entries/{entry_id}")
